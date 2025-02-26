@@ -1,0 +1,44 @@
+.baio1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 100px;
+    padding: 100px;
+    background-color: rgb(6, 63, 63);
+    border-radius: 10px;
+}
+
+.baio1 input[type="text"] {
+    margin: 10px;
+    padding: 5px;
+    width: 200px;
+    font-size: 16px;
+}
+
+.baio1 input[type="radio"] {
+    margin: 10px;
+}
+
+.baio1 span {
+    margin-right: 20px;
+    font-size: 18px;
+}
+
+.baio1 button {
+    margin: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.baio1 div {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+.inputradio{
+    display: flex;
+    flex-direction: row;
+    
+    
+}
