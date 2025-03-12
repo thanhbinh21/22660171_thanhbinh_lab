@@ -1,0 +1,50 @@
+ const recipes = [
+    { 
+      id: 1,
+      title: 'Italian-style tomato salad',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6gQ5qYx1jrPHAtwQSpPypunvy7qSChOet2g&s',
+    time: '14 minutes'
+    },
+    { 
+      id: 2,
+      title: 'Vegetable and shrimp spaghettini',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcHukxFt7ZvbJEd6iD6zJ_6fx3zrNKYh2hbg&s',
+      time: '15 minutes'
+    },
+    { 
+      id: 3,
+      title: 'Lotus delight salad',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNU5wIgubr594PTUtO8QahlAUvrde0PK2PSA&s',
+      time: '20 minutes'
+    },
+    { 
+      id: 4,
+      title: 'Snack cakes',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3WbA3Dcd8LysN9aHsYy2HJxqkwVZ-qacxEw&s',
+      time: '21 minutes'
+    },
+    { 
+      id: 5,
+      title: 'Salad with cabbage and shrimp',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgxsjtMOTPDglaNtTTT_XW9rF69slaewU9Cw&s',
+      time: '32 minutes'
+    },
+    { 
+      id: 6,
+      title: 'Bean, shrimp, and potato salad',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGNUvOpaH-1ylCmRA_dXuYXh3TAANMp9clXQ&s',
+      time: '32 minutes'
+    },
+    { 
+      id: 7,
+      title: 'Sunny-side up fried eggs',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-K1M4cl_fi9D1A9c2w1zXh9G-st0_MvynOw&s',
+      time: '32 minutes'
+    },
+    { 
+      id: 8,
+      title: 'Lotus delight salad',
+      image: 'https://patecotden.net/wp-content/uploads/2024/01/mon-an-sang-com-tam.png',
+      time: '32 minutes'
+    },
+  ];
