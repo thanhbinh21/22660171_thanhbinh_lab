@@ -1,6 +1,9 @@
+// src/components/DataTable.js
+import { useState } from 'react';
 import { FaArrowDown, FaArrowUp, FaEdit } from 'react-icons/fa';
 
 const DataTable = () => {
+  // Dữ liệu tĩnh (sẽ thay bằng API ở phần sau)
   const data = [
     { id: 1, customerName: "Elizabeth Lee", company: "AvatarSystems", orderValue: 359, orderDate: "10/07/2023", status: "New" },
     { id: 2, customerName: "Carlos Garcia", company: "SnoozeShift", orderValue: 747, orderDate: "24/07/2023", status: "New" },
@@ -9,6 +12,48 @@ const DataTable = () => {
     { id: 5, customerName: "Ryan Young", company: "DataStream Inc.", orderValue: 769, orderDate: "01/05/2023", status: "Completed" },
     { id: 6, customerName: "Hailey Adams", company: "FlowRush", orderValue: 922, orderDate: "10/06/2023", status: "Completed" },
   ];
+
+  // State cho checkbox
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  // State cho phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5; // Số dòng mỗi trang
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const paginatedData = data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+  // Xử lý chọn tất cả
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(paginatedData.map((row) => row.id));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  // Xử lý chọn từng dòng
+  const handleSelectRow = (id) => {
+    if (selectedRows.includes(id)) {
+      setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
+    } else {
+      setSelectedRows([...selectedRows, id]);
+    }
+  };
+
+  // Xử lý chuyển trang
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setSelectedRows([]); // Reset checkbox khi chuyển trang
+    setSelectAll(false);
+  };
+
+  // Tạo danh sách các trang
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
@@ -32,12 +77,18 @@ const DataTable = () => {
         </div>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="text-gray-500 text-xs uppercase">
               <th className="p-4">
-                <input type="checkbox" className="w-4 h-4" />
+                <input
+                  type="checkbox"
+                  className="w-4 h-4"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                />
               </th>
               <th className="p-4">Customer Name</th>
               <th className="p-4">Company</th>
@@ -48,10 +99,15 @@ const DataTable = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row) => (
-              <tr key={row.id} className="border-t border-gray-100">
+            {paginatedData.map((row) => (
+              <tr key={row.id} className="border-t border-gray-100 hover:bg-gray-50">
                 <td className="p-4">
-                  <input type="checkbox" className="w-4 h-4" />
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4"
+                    checked={selectedRows.includes(row.id)}
+                    onChange={() => handleSelectRow(row.id)}
+                  />
                 </td>
                 <td className="p-4 flex items-center">
                   <div className="w-8 h-8 bg-gray-200 rounded-full mr-3"></div>
@@ -84,16 +140,23 @@ const DataTable = () => {
         </table>
       </div>
 
+      {/* Pagination */}
       <div className="flex justify-between items-center mt-6">
-        <p className="text-sm text-gray-600">63 results</p>
+        <p className="text-sm text-gray-600">{data.length} results</p>
         <div className="flex space-x-2">
-          <button className="px-3 py-1 bg-pink-500 text-white rounded-full text-sm">1</button>
-          <button className="px-3 py-1 border border-gray-300 rounded-full text-sm text-gray-600 hover:bg-gray-100">2</button>
-          <button className="px-3 py-1 border border-gray-300 rounded-full text-sm text-gray-600 hover:bg-gray-100">3</button>
-          <button className="px-3 py-1 border border-gray-300 rounded-full text-sm text-gray-600 hover:bg-gray-100">4</button>
-          <button className="px-3 py-1 border border-gray-300 rounded-full text-sm text-gray-600 hover:bg-gray-100">...</button>
-          <button className="px-3 py-1 border border-gray-300 rounded-full text-sm text-gray-600 hover:bg-gray-100">10</button>
-          <button className="px-3 py-1 border border-gray-300 rounded-full text-sm text-gray-600 hover:bg-gray-100">11</button>
+          {pageNumbers.map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-3 py-1 rounded-full text-sm ${
+                currentPage === page
+                  ? "bg-pink-500 text-white"
+                  : "border border-gray-300 text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
         </div>
       </div>
     </div>
