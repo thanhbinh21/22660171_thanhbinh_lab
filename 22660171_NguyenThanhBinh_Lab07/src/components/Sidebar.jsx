@@ -1,8 +1,14 @@
+import { useState } from 'react';
 import { FaTh, FaFolder, FaUsers, FaChartBar, FaEnvelope, FaPlug } from 'react-icons/fa';
-
 const Sidebar = () => {
+  const [activeItem, setActiveItem] = useState('Dashboard');
+
+  // Xử lý khi click vào một mục
+  const handleItemClick = (item) => {
+    setActiveItem(item);
+  };
   return (
-    <div className="w-64 bg-white shadow-md flex flex-col">
+    <div className="w-64 bg-white shadow-md flex flex-col p-4">
       <div className="p-4">
         <h1 className="text-2xl font-bold text-pink-500">LOGO</h1>
       </div>
@@ -10,43 +16,82 @@ const Sidebar = () => {
       <nav className="flex-1">
         <ul>
           <li>
-            <a
-              href="#"
-              className="flex items-center p-4 bg-pink-500 text-white"
+            <button
+              onClick={() => handleItemClick('Dashboard')}
+              className={`flex items-center p-4 w-full text-left ${
+                activeItem === 'Dashboard'
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
             >
               <FaTh className="mr-3" />
               Dashboard
-            </a>
+            </button>
           </li>
           <li>
-            <a href="#" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <button
+              onClick={() => handleItemClick('Projects')}
+              className={`flex items-center p-4 w-full text-left ${
+                activeItem === 'Projects'
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
               <FaFolder className="mr-3" />
               Projects
-            </a>
+            </button>
           </li>
           <li>
-            <a href="#" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <button
+              onClick={() => handleItemClick('Teams')}
+              className={`flex items-center p-4 w-full text-left ${
+                activeItem === 'Teams'
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
               <FaUsers className="mr-3" />
               Teams
-            </a>
+            </button>
           </li>
           <li>
-            <a href="#" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <button
+              onClick={() => handleItemClick('Analytics')}
+              className={`flex items-center p-4 w-full text-left ${
+                activeItem === 'Analytics'
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
               <FaChartBar className="mr-3" />
               Analytics
-            </a>
+            </button>
           </li>
           <li>
-            <a href="#" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <button
+              onClick={() => handleItemClick('Messages')}
+              className={`flex items-center p-4 w-full text-left ${
+                activeItem === 'Messages'
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
               <FaEnvelope className="mr-3" />
               Messages
-            </a>
+            </button>
           </li>
           <li>
-            <a href="#" className="flex items-center p-4 text-gray-600 hover:bg-gray-100">
+            <button
+              onClick={() => handleItemClick('Integrations')}
+              className={`flex items-center p-4 w-full text-left ${
+                activeItem === 'Integrations'
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
               <FaPlug className="mr-3" />
               Integrations
-            </a>
+            </button>
           </li>
         </ul>
       </nav>
