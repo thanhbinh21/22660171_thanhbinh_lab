@@ -1,29 +1,44 @@
-// src/components/DataTable.js
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { FaArrowDown, FaArrowUp, FaEdit } from 'react-icons/fa';
 
 const DataTable = () => {
-  // Dữ liệu tĩnh (sẽ thay bằng API ở phần sau)
-  const data = [
-    { id: 1, customerName: "Elizabeth Lee", company: "AvatarSystems", orderValue: 359, orderDate: "10/07/2023", status: "New" },
-    { id: 2, customerName: "Carlos Garcia", company: "SnoozeShift", orderValue: 747, orderDate: "24/07/2023", status: "New" },
-    { id: 3, customerName: "Elizabeth Bailey", company: "Prime Time Telecom", orderValue: 564, orderDate: "08/08/2023", status: "In-progress" },
-    { id: 4, customerName: "Ryan Brown", company: "OmniTech Corporation", orderValue: 541, orderDate: "31/08/2023", status: "In-progress" },
-    { id: 5, customerName: "Ryan Young", company: "DataStream Inc.", orderValue: 769, orderDate: "01/05/2023", status: "Completed" },
-    { id: 6, customerName: "Hailey Adams", company: "FlowRush", orderValue: 922, orderDate: "10/06/2023", status: "Completed" },
-  ];
 
-  // State cho checkbox
+  // const data = [
+  //   { id: 1, customerName: "Elizabeth Lee", company: "AvatarSystems", orderValue: 359, orderDate: "10/07/2023", status: "New" },
+  //   { id: 2, customerName: "Carlos Garcia", company: "SnoozeShift", orderValue: 747, orderDate: "24/07/2023", status: "New" },
+  //   { id: 3, customerName: "Elizabeth Bailey", company: "Prime Time Telecom", orderValue: 564, orderDate: "08/08/2023", status: "In-progress" },
+  //   { id: 4, customerName: "Ryan Brown", company: "OmniTech Corporation", orderValue: 541, orderDate: "31/08/2023", status: "In-progress" },
+  //   { id: 5, customerName: "Ryan Young", company: "DataStream Inc.", orderValue: 769, orderDate: "01/05/2023", status: "Completed" },
+  //   { id: 6, customerName: "Hailey Adams", company: "FlowRush", orderValue: 922, orderDate: "10/06/2023", status: "Completed" },
+  // ];
+
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers');
+        setData(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch data');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
-  // State cho phân trang
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 5; // Số dòng mỗi trang
+  const rowsPerPage = 5; 
   const totalPages = Math.ceil(data.length / rowsPerPage);
   const paginatedData = data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
-  // Xử lý chọn tất cả
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedRows([]);
@@ -33,7 +48,6 @@ const DataTable = () => {
     setSelectAll(!selectAll);
   };
 
-  // Xử lý chọn từng dòng
   const handleSelectRow = (id) => {
     if (selectedRows.includes(id)) {
       setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
@@ -42,14 +56,12 @@ const DataTable = () => {
     }
   };
 
-  // Xử lý chuyển trang
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    setSelectedRows([]); // Reset checkbox khi chuyển trang
+    setSelectedRows([]); 
     setSelectAll(false);
   };
 
-  // Tạo danh sách các trang
   const pageNumbers = [];
   for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);
