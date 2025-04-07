@@ -15,7 +15,7 @@ const Overview = () => {
         const response = await axios.get(
           "https://67f2bf95ec56ec1a36d4144f.mockapi.io/overview"
         );
-        const data = response.data[0]; // Lấy phần tử đầu tiên từ mảng
+        const data = response.data[0]; 
         setOverviewData({
           turnover: data.turnover,
           profit: data.profit,
