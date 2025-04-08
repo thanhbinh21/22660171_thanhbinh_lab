@@ -1,24 +1,20 @@
-// src/components/DataTable.js
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaArrowDown, FaArrowUp, FaEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const DataTable = () => {
-  // State cho dữ liệu từ API
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // State cho checkbox
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
-  // State cho phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5; // Số dòng mỗi trang
 
-  // State cho modal chỉnh sửa
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('edit'); // "edit" hoặc "add"
   const [editData, setEditData] = useState(null);
   const [formData, setFormData] = useState({
     customerName: '',
@@ -46,11 +42,9 @@ const DataTable = () => {
     fetchData();
   }, []);
 
-  // Tính toán phân trang
   const totalPages = Math.ceil(data.length / rowsPerPage);
   const paginatedData = data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
-  // Xử lý chọn tất cả
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedRows([]);
@@ -60,7 +54,6 @@ const DataTable = () => {
     setSelectAll(!selectAll);
   };
 
-  // Xử lý chọn từng dòng
   const handleSelectRow = (id) => {
     if (selectedRows.includes(id)) {
       setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
@@ -69,14 +62,12 @@ const DataTable = () => {
     }
   };
 
-  // Xử lý chuyển trang
   const handlePageChange = (page) => {
     setCurrentPage(page);
     setSelectedRows([]); // Reset checkbox khi chuyển trang
     setSelectAll(false);
   };
 
-  // Xử lý trang trước
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -85,7 +76,6 @@ const DataTable = () => {
     }
   };
 
-  // Xử lý trang sau
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -94,12 +84,10 @@ const DataTable = () => {
     }
   };
 
-  // Tạo danh sách các trang hiển thị
   const getPageNumbers = () => {
-    const maxPagesToShow = 3; // Số trang tối đa hiển thị ở mỗi đầu/cuối
+    const maxPagesToShow = 3; 
     const pages = [];
 
-    // Nếu tổng số trang <= 7, hiển thị tất cả
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -107,7 +95,6 @@ const DataTable = () => {
       return pages;
     }
 
-    // Hiển thị 3 trang đầu
     if (currentPage <= 4) {
       for (let i = 1; i <= maxPagesToShow; i++) {
         pages.push(i);
@@ -117,7 +104,6 @@ const DataTable = () => {
         pages.push(i);
       }
     }
-    // Hiển thị 3 trang cuối
     else if (currentPage >= totalPages - 3) {
       for (let i = 1; i <= 2; i++) {
         pages.push(i);
@@ -127,7 +113,6 @@ const DataTable = () => {
         pages.push(i);
       }
     }
-    // Hiển thị trang ở giữa
     else {
       for (let i = 1; i <= 2; i++) {
         pages.push(i);
@@ -145,7 +130,6 @@ const DataTable = () => {
     return pages;
   };
 
-  // Mở modal và lấy dữ liệu chi tiết
   const handleEditClick = async (id) => {
     try {
       const response = await axios.get(`https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(id)}`);
@@ -158,6 +142,7 @@ const DataTable = () => {
         status: response.data.status,
       });
       setModalError(null);
+      setModalMode('edit'); // Chế độ chỉnh sửa
     } catch (err) {
       if (err.response && err.response.status === 404) {
         setModalError(`Customer with ID ${id} not found. Please check the ID and try again.`);
@@ -169,32 +154,62 @@ const DataTable = () => {
     setIsModalOpen(true);
   };
 
+  const handleAddClick = () => {
+    setEditData(null);
+    setFormData({
+      customerName: '',
+      company: '',
+      orderValue: '',
+      orderDate: '',
+      status: 'New', // Giá trị mặc định cho status
+    });
+    setModalError(null);
+    setModalMode('add'); // Chế độ thêm mới
+    setIsModalOpen(true);
+  };
+
   // Xử lý thay đổi giá trị trong form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Xử lý submit form (cập nhật dữ liệu)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!editData) {
-      setModalError('No customer data to update.');
-      return;
-    }
 
-    try {
-      const response = await axios.put(
-        `https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(editData.id)}`,
-        formData
-      );
-      setData((prevData) =>
-        prevData.map((item) => (item.id === editData.id ? response.data : item))
-      );
-      setIsModalOpen(false);
-    } catch (err) {
-      setModalError('Failed to update customer data. Please try again.');
-      console.error('Failed to update customer data:', err);
+    if (modalMode === 'edit') {
+      // Chế độ chỉnh sửa
+      if (!editData) {
+        setModalError('No customer data to update.');
+        return;
+      }
+
+      try {
+        const response = await axios.put(
+          `https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(editData.id)}`,
+          formData
+        );
+        setData((prevData) =>
+          prevData.map((item) => (item.id === editData.id ? response.data : item))
+        );
+        setIsModalOpen(false);
+      } catch (err) {
+        setModalError('Failed to update customer data. Please try again.');
+        console.error('Failed to update customer data:', err);
+      }
+    } else {
+      // Chế độ thêm mới
+      try {
+        const response = await axios.post(
+          'https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers',
+          formData
+        );
+        setData((prevData) => [ response.data,...prevData]); // Thêm khách hàng mới vào danh sách
+        setIsModalOpen(false);
+      } catch (err) {
+        setModalError('Failed to add new customer. Please try again.');
+        console.error('Failed to add new customer:', err);
+      }
     }
   };
 
@@ -210,6 +225,7 @@ const DataTable = () => {
       status: '',
     });
     setModalError(null);
+    setModalMode('edit'); // Reset về chế độ mặc định
   };
 
   // Xử lý trạng thái loading và lỗi
@@ -232,7 +248,10 @@ const DataTable = () => {
           <h2 className="text-xl font-bold text-gray-800">DETAILED REPORT</h2>
         </div>
         <div className="flex space-x-3">
-          <button className="flex items-center px-3 py-1.5 bg-pink-500 text-white rounded-lg text-sm">
+          <button
+            onClick={handleAddClick}
+            className="flex items-center px-3 py-1.5 bg-pink-500 text-white rounded-lg text-sm"
+          >
             <FaArrowDown className="mr-1" />
             Import
           </button>
@@ -356,11 +375,13 @@ const DataTable = () => {
         </div>
       </div>
 
-      {/* Edit Modal */}
+      {/* Modal (dùng chung cho Edit và Add) */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-opacity-30 backdrop-blur flex items-center justify-center border-2">
+        <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-bold mb-4">Edit Customer</h3>
+            <h3 className="text-lg font-bold mb-4">
+              {modalMode === 'edit' ? 'Edit Customer' : 'Add New Customer'}
+            </h3>
             {modalError && (
               <div className="mb-4 p-2 bg-red-100 text-red-600 rounded-lg">
                 {modalError}
@@ -438,7 +459,7 @@ const DataTable = () => {
                   type="submit"
                   className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
                 >
-                  Save
+                  {modalMode === 'edit' ? 'Save' : 'Add'}
                 </button>
               </div>
             </form>
