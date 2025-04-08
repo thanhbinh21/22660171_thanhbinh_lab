@@ -1,6 +1,20 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { FaArrowDown, FaArrowUp, FaEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  FaArrowDown,
+  FaArrowUp,
+  FaEdit,
+  FaChevronLeft,
+  FaChevronRight,
+  FaPen,
+} from "react-icons/fa";
+
+import { IoDocumentTextOutline } from "react-icons/io5";
+import Avatar1 from "../assets/Lab_05/Avatar (1).png";
+import Avatar2 from "../assets/Lab_05/Avatar (2).png";
+import Avatar3 from "../assets/Lab_05/Avatar (3).png";
+import Avatar4 from "../assets/Lab_05/Avatar (4).png";
+import Avatar5 from "../assets/Lab_05/Avatar (5).png";
 
 const DataTable = () => {
   const [data, setData] = useState([]);
@@ -11,30 +25,31 @@ const DataTable = () => {
   const [selectAll, setSelectAll] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 5; // Số dòng mỗi trang
+  const rowsPerPage = 5; 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('edit'); // "edit" hoặc "add"
+  const [modalMode, setModalMode] = useState("edit"); 
   const [editData, setEditData] = useState(null);
   const [formData, setFormData] = useState({
-    customerName: '',
-    company: '',
-    orderValue: '',
-    orderDate: '',
-    status: '',
+    customerName: "",
+    company: "",
+    orderValue: "",
+    orderDate: "",
+    status: "",
   });
   const [modalError, setModalError] = useState(null);
 
-  // Gọi API để lấy danh sách khách hàng
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers');
+        const response = await axios.get(
+          "https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers"
+        );
         setData(response.data);
-        console.log('Danh sách khách hàng:', response.data); // Log để kiểm tra
+        console.log("Danh sách khách hàng:", response.data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch data');
+        setError("Failed to fetch data");
         setLoading(false);
       }
     };
@@ -43,7 +58,10 @@ const DataTable = () => {
   }, []);
 
   const totalPages = Math.ceil(data.length / rowsPerPage);
-  const paginatedData = data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  const paginatedData = data.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   const handleSelectAll = () => {
     if (selectAll) {
@@ -64,7 +82,7 @@ const DataTable = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    setSelectedRows([]); // Reset checkbox khi chuyển trang
+    setSelectedRows([]);
     setSelectAll(false);
   };
 
@@ -85,7 +103,7 @@ const DataTable = () => {
   };
 
   const getPageNumbers = () => {
-    const maxPagesToShow = 3; 
+    const maxPagesToShow = 3;
     const pages = [];
 
     if (totalPages <= 7) {
@@ -99,29 +117,27 @@ const DataTable = () => {
       for (let i = 1; i <= maxPagesToShow; i++) {
         pages.push(i);
       }
-      pages.push('...');
+      pages.push("...");
       for (let i = totalPages - 1; i <= totalPages; i++) {
         pages.push(i);
       }
-    }
-    else if (currentPage >= totalPages - 3) {
+    } else if (currentPage >= totalPages - 3) {
       for (let i = 1; i <= 2; i++) {
         pages.push(i);
       }
-      pages.push('...');
+      pages.push("...");
       for (let i = totalPages - 2; i <= totalPages; i++) {
         pages.push(i);
       }
-    }
-    else {
+    } else {
       for (let i = 1; i <= 2; i++) {
         pages.push(i);
       }
-      pages.push('...');
+      pages.push("...");
       pages.push(currentPage - 1);
       pages.push(currentPage);
       pages.push(currentPage + 1);
-      pages.push('...');
+      pages.push("...");
       for (let i = totalPages - 1; i <= totalPages; i++) {
         pages.push(i);
       }
@@ -132,7 +148,9 @@ const DataTable = () => {
 
   const handleEditClick = async (id) => {
     try {
-      const response = await axios.get(`https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(id)}`);
+      const response = await axios.get(
+        `https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(id)}`
+      );
       setEditData(response.data);
       setFormData({
         customerName: response.data.customerName,
@@ -142,14 +160,16 @@ const DataTable = () => {
         status: response.data.status,
       });
       setModalError(null);
-      setModalMode('edit'); // Chế độ chỉnh sửa
+      setModalMode("edit");
     } catch (err) {
       if (err.response && err.response.status === 404) {
-        setModalError(`Customer with ID ${id} not found. Please check the ID and try again.`);
+        setModalError(
+          `Customer with ID ${id} not found. Please check the ID and try again.`
+        );
       } else {
-        setModalError('Failed to fetch customer data. Please try again.');
+        setModalError("Failed to fetch customer data. Please try again.");
       }
-      console.error('Failed to fetch customer data:', err);
+      console.error("Failed to fetch customer data:", err);
     }
     setIsModalOpen(true);
   };
@@ -157,18 +177,17 @@ const DataTable = () => {
   const handleAddClick = () => {
     setEditData(null);
     setFormData({
-      customerName: '',
-      company: '',
-      orderValue: '',
-      orderDate: '',
-      status: 'New', // Giá trị mặc định cho status
+      customerName: "",
+      company: "",
+      orderValue: "",
+      orderDate: "",
+      status: "New",
     });
     setModalError(null);
-    setModalMode('add'); // Chế độ thêm mới
+    setModalMode("add");
     setIsModalOpen(true);
   };
 
-  // Xử lý thay đổi giá trị trong form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -177,58 +196,58 @@ const DataTable = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (modalMode === 'edit') {
-      // Chế độ chỉnh sửa
+    if (modalMode === "edit") {
       if (!editData) {
-        setModalError('No customer data to update.');
+        setModalError("No customer data to update.");
         return;
       }
 
       try {
         const response = await axios.put(
-          `https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(editData.id)}`,
+          `https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(
+            editData.id
+          )}`,
           formData
         );
         setData((prevData) =>
-          prevData.map((item) => (item.id === editData.id ? response.data : item))
+          prevData.map((item) =>
+            item.id === editData.id ? response.data : item
+          )
         );
         setIsModalOpen(false);
       } catch (err) {
-        setModalError('Failed to update customer data. Please try again.');
-        console.error('Failed to update customer data:', err);
+        setModalError("Failed to update customer data. Please try again.");
+        console.error("Failed to update customer data:", err);
       }
     } else {
-      // Chế độ thêm mới
       try {
         const response = await axios.post(
-          'https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers',
+          "https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers",
           formData
         );
-        setData((prevData) => [ response.data,...prevData]); // Thêm khách hàng mới vào danh sách
+        setData((prevData) => [response.data, ...prevData]);
         setIsModalOpen(false);
       } catch (err) {
-        setModalError('Failed to add new customer. Please try again.');
-        console.error('Failed to add new customer:', err);
+        setModalError("Failed to add new customer. Please try again.");
+        console.error("Failed to add new customer:", err);
       }
     }
   };
 
-  // Đóng modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditData(null);
     setFormData({
-      customerName: '',
-      company: '',
-      orderValue: '',
-      orderDate: '',
-      status: '',
+      customerName: "",
+      company: "",
+      orderValue: "",
+      orderDate: "",
+      status: "",
     });
     setModalError(null);
-    setModalMode('edit'); // Reset về chế độ mặc định
+    setModalMode("edit"); // Reset về chế độ mặc định
   };
 
-  // Xử lý trạng thái loading và lỗi
   if (loading) {
     return <div className="text-center text-gray-600">Loading...</div>;
   }
@@ -237,33 +256,31 @@ const DataTable = () => {
     return <div className="text-center text-red-500">{error}</div>;
   }
 
+  const avatarImages = [Avatar1, Avatar2, Avatar3, Avatar4, Avatar5];
+
   return (
-    <div className="bg-white shadow-md rounded-lg p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+    <div className="bg-white shadow-md px-5 pb-5 ">
+      <div className="flex justify-between items-center mb-3">
         <div className="flex items-center">
-          <svg className="w-5 h-5 text-pink-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-6h6v6m-6 0h6m-3-9V3m-9 9h12a2 2 0 002-2V4a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-          </svg>
-          <h2 className="text-xl font-bold text-gray-800">DETAILED REPORT</h2>
+          <IoDocumentTextOutline className="mr-2 text-pink-600 text-2xl" />
+          <h2 className="text-2xl font-bold text-gray-800">Detailed report</h2>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={handleAddClick}
-            className="flex items-center px-3 py-1.5 bg-pink-500 text-white rounded-lg text-sm"
+            className="flex items-center px-3 py-1.5 border-2 border-pink-400 bg-white  text-pink-500 rounded-lg text-sm hover:cursor-pointer"
           >
             <FaArrowDown className="mr-1" />
             Import
           </button>
-          <button className="flex items-center px-3 py-1.5 bg-pink-500 text-white rounded-lg text-sm">
+          <button className="flex items-center px-3 py-1.5 border-2 border-pink-400 bg-white  text-pink-500 rounded-lg text-sm hover:cursor-pointer">
             <FaArrowUp className="mr-1" />
             Export
           </button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
+      <div className=" bg-pink-50 overflow-x-auto p-5 border border-gray-300 rounded-xl">
         <table className="w-full text-left">
           <thead>
             <tr className="text-gray-500 text-xs uppercase">
@@ -275,17 +292,20 @@ const DataTable = () => {
                   onChange={handleSelectAll}
                 />
               </th>
-              <th className="p-4">Customer Name</th>
-              <th className="p-4">Company</th>
-              <th className="p-4">Order Value</th>
-              <th className="p-4">Order Date</th>
-              <th className="p-4">Status</th>
-              <th className="p-4"></th>
+              <th className="p-4 text-[15px] ">Customer Name</th>
+              <th className="p-4 text-[15px]">Company</th>
+              <th className="p-4 text-[15px]">Order Value</th>
+              <th className="p-4 text-[15px]">Order Date</th>
+              <th className="p-4 text-[15px]">Status</th>
+              <th className="p-4 text-[15px]"></th>
             </tr>
           </thead>
           <tbody>
             {paginatedData.map((row) => (
-              <tr key={row.id} className="border-t border-gray-100 hover:bg-gray-50">
+              <tr
+                key={row.id}
+                className="border-t border-gray-100 hover:bg-gray-50"
+              >
                 <td className="p-4">
                   <input
                     type="checkbox"
@@ -295,8 +315,20 @@ const DataTable = () => {
                   />
                 </td>
                 <td className="p-4 flex items-center">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full mr-3"></div>
-                  <span className="text-gray-800">{row.customerName}</span>
+                  <div className="w-8 h-8 bg-gray-200 rounded-full mr-3">
+                    <img
+                      src={
+                        avatarImages[
+                          Math.floor(Math.random() * avatarImages.length)
+                        ]
+                      }
+                      alt="avatar"
+                      className="w-8 h-8 rounded-full mr-3 object-cover"
+                    />
+                  </div>
+                  <span className="text-gray-800 font-bold">
+                    {row.customerName}
+                  </span>
                 </td>
                 <td className="p-4 text-gray-600">{row.company}</td>
                 <td className="p-4 text-gray-800">${row.orderValue}</td>
@@ -316,7 +348,7 @@ const DataTable = () => {
                 </td>
                 <td className="p-4">
                   <button onClick={() => handleEditClick(row.id)}>
-                    <FaEdit className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+                    <FaPen  className="w-4 h-4 text-gray-500 hover:text-gray-700 hover:cursor-pointer" />
                   </button>
                 </td>
               </tr>
@@ -346,15 +378,15 @@ const DataTable = () => {
           {getPageNumbers().map((page, index) => (
             <button
               key={index}
-              onClick={() => typeof page === 'number' && handlePageChange(page)}
+              onClick={() => typeof page === "number" && handlePageChange(page)}
               className={`px-3 py-1 rounded-full text-sm ${
                 page === currentPage
                   ? "bg-pink-500 text-white"
-                  : typeof page === 'number'
+                  : typeof page === "number"
                   ? "border border-gray-300 text-gray-600 hover:bg-gray-100"
                   : "text-gray-600 cursor-default"
               }`}
-              disabled={typeof page !== 'number'}
+              disabled={typeof page !== "number"}
             >
               {page}
             </button>
@@ -380,7 +412,7 @@ const DataTable = () => {
         <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-bold mb-4">
-              {modalMode === 'edit' ? 'Edit Customer' : 'Add New Customer'}
+              {modalMode === "edit" ? "Edit Customer" : "Add New Customer"}
             </h3>
             {modalError && (
               <div className="mb-4 p-2 bg-red-100 text-red-600 rounded-lg">
@@ -389,7 +421,9 @@ const DataTable = () => {
             )}
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Customer Name</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Customer Name
+                </label>
                 <input
                   type="text"
                   name="customerName"
@@ -400,7 +434,9 @@ const DataTable = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Company</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Company
+                </label>
                 <input
                   type="text"
                   name="company"
@@ -411,7 +447,9 @@ const DataTable = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Order Value</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Order Value
+                </label>
                 <input
                   type="number"
                   name="orderValue"
@@ -422,7 +460,9 @@ const DataTable = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Order Date</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Order Date
+                </label>
                 <input
                   type="text"
                   name="orderDate"
@@ -434,7 +474,9 @@ const DataTable = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Status
+                </label>
                 <select
                   name="status"
                   value={formData.status}
@@ -459,7 +501,7 @@ const DataTable = () => {
                   type="submit"
                   className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
                 >
-                  {modalMode === 'edit' ? 'Save' : 'Add'}
+                  {modalMode === "edit" ? "Save" : "Add"}
                 </button>
               </div>
             </form>

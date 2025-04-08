@@ -1,24 +1,38 @@
-// src/components/Sidebar.js
 import { NavLink } from 'react-router-dom';
 import { FaTh, FaFolder, FaUsers, FaChartBar, FaEnvelope, FaPlug } from 'react-icons/fa';
+import { IoCode } from "react-icons/io5";
+
+import Logo from "../assets/Lab_05/Image 1858.png"
+import Group from "../assets/Lab_05/Group.png"
+import Dashboard from "../assets/Lab_05/Squares four 1.png"
+import Projects from '../assets/Lab_05/Folder.png';
+import Teams from '../assets/Lab_05/Groups.png';
+import Analytics from '../assets/Lab_05/Pie chart.png';
+import Messages from '../assets/Lab_05/Chat.png';
+import Integrations from '../assets/Lab_05/Code.png';
+
+
+
 
 const Sidebar = () => {
   return (
-    <div className="w-64 bg-white shadow-md flex flex-col">
+    <div className="w-64 bg-white shadow-md flex flex-col ml-2  rounded border  border-gray-300 sticky top-0 left-0z-40 ">
       {/* Logo */}
-      <div className="p-4">
-        <h1 className="text-2xl font-bold text-pink-500">LOGO</h1>
+      <div className="p-3">
+        <h1 className="text-2xl font-bold text-pink-500">
+          <img src={Logo} alt="" className='object-cover' />
+        </h1>
       </div>
 
       {/* Menu */}
-      <nav className="flex-1">
+      <nav className="flex-1 px-2">
         <ul>
           <li>
             <NavLink
               to="/dashboard"
               className={({ isActive }) =>
                 isActive
-                  ? 'flex items-center p-4 bg-pink-500 text-white'
+                  ? 'flex items-center p-4  bg-pink-500 text-white rounded'
                   : 'flex items-center p-4 text-gray-600 hover:bg-gray-100'
               }
             >
@@ -31,7 +45,7 @@ const Sidebar = () => {
               to="/projects"
               className={({ isActive }) =>
                 isActive
-                  ? 'flex items-center p-4 bg-pink-500 text-white'
+                  ? 'flex items-center p-4  bg-pink-500 text-white rounded'
                   : 'flex items-center p-4 text-gray-600 hover:bg-gray-100'
               }
             >
@@ -44,7 +58,7 @@ const Sidebar = () => {
               to="/teams"
               className={({ isActive }) =>
                 isActive
-                  ? 'flex items-center p-4 bg-pink-500 text-white'
+                  ? 'flex items-center p-4  bg-pink-500 text-white rounded'
                   : 'flex items-center p-4 text-gray-600 hover:bg-gray-100'
               }
             >
@@ -57,7 +71,7 @@ const Sidebar = () => {
               to="/analytics"
               className={({ isActive }) =>
                 isActive
-                  ? 'flex items-center p-4 bg-pink-500 text-white'
+                  ? 'flex items-center p-4  bg-pink-500 text-white rounded'
                   : 'flex items-center p-4 text-gray-600 hover:bg-gray-100'
               }
             >
@@ -70,7 +84,7 @@ const Sidebar = () => {
               to="/messages"
               className={({ isActive }) =>
                 isActive
-                  ? 'flex items-center p-4 bg-pink-500 text-white'
+                  ? 'flex items-center p-4  bg-pink-500 text-white rounded '
                   : 'flex items-center p-4 text-gray-600 hover:bg-gray-100'
               }
             >
@@ -83,11 +97,11 @@ const Sidebar = () => {
               to="/integrations"
               className={({ isActive }) =>
                 isActive
-                  ? 'flex items-center p-4 bg-pink-500 text-white'
+                  ? 'flex items-center p-4  bg-pink-500 text-white rounded'
                   : 'flex items-center p-4 text-gray-600 hover:bg-gray-100'
               }
             >
-              <FaPlug className="mr-3" />
+              <IoCode className="mr-3" />
               Integrations
             </NavLink>
           </li>
@@ -95,12 +109,12 @@ const Sidebar = () => {
       </nav>
 
       {/* Advertisement */}
-      <div className="p-4">
+      <div className="p-3">
         <div className="bg-blue-50 p-4 rounded-lg text-center">
-          <div className="h-32 bg-gray-200 mb-4 rounded-lg">
-            <p className="text-gray-500">Illustration Placeholder</p>
+          <div className=" mb-4 rounded-lg flex justify-center items-center">
+            <img src={Group} alt="" className='object-cover w-35' />
           </div>
-          <h3 className="text-lg font-semibold">V2.0 IS AVAILABLE</h3>
+          <h3 className="text-md font-semibold">V2.0 IS AVAILABLE</h3>
           <button className="mt-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-100">
             Try now
           </button>
