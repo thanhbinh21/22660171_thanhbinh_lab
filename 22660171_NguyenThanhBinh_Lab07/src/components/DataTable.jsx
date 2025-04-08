@@ -1,27 +1,41 @@
+// src/components/DataTable.js
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaArrowDown, FaArrowUp, FaEdit } from 'react-icons/fa';
+import { FaArrowDown, FaArrowUp, FaEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const DataTable = () => {
-
-  // const data = [
-  //   { id: 1, customerName: "Elizabeth Lee", company: "AvatarSystems", orderValue: 359, orderDate: "10/07/2023", status: "New" },
-  //   { id: 2, customerName: "Carlos Garcia", company: "SnoozeShift", orderValue: 747, orderDate: "24/07/2023", status: "New" },
-  //   { id: 3, customerName: "Elizabeth Bailey", company: "Prime Time Telecom", orderValue: 564, orderDate: "08/08/2023", status: "In-progress" },
-  //   { id: 4, customerName: "Ryan Brown", company: "OmniTech Corporation", orderValue: 541, orderDate: "31/08/2023", status: "In-progress" },
-  //   { id: 5, customerName: "Ryan Young", company: "DataStream Inc.", orderValue: 769, orderDate: "01/05/2023", status: "Completed" },
-  //   { id: 6, customerName: "Hailey Adams", company: "FlowRush", orderValue: 922, orderDate: "10/06/2023", status: "Completed" },
-  // ];
-
+  // State cho dữ liệu từ API
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // State cho checkbox
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  // State cho phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5; // Số dòng mỗi trang
+
+  // State cho modal chỉnh sửa
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [formData, setFormData] = useState({
+    customerName: '',
+    company: '',
+    orderValue: '',
+    orderDate: '',
+    status: '',
+  });
+  const [modalError, setModalError] = useState(null);
+
+  // Gọi API để lấy danh sách khách hàng
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers');
         setData(response.data);
+        console.log('Danh sách khách hàng:', response.data); // Log để kiểm tra
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch data');
@@ -31,14 +45,12 @@ const DataTable = () => {
 
     fetchData();
   }, []);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 5; 
+  // Tính toán phân trang
   const totalPages = Math.ceil(data.length / rowsPerPage);
   const paginatedData = data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
+  // Xử lý chọn tất cả
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedRows([]);
@@ -48,6 +60,7 @@ const DataTable = () => {
     setSelectAll(!selectAll);
   };
 
+  // Xử lý chọn từng dòng
   const handleSelectRow = (id) => {
     if (selectedRows.includes(id)) {
       setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
@@ -56,15 +69,156 @@ const DataTable = () => {
     }
   };
 
+  // Xử lý chuyển trang
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    setSelectedRows([]); 
+    setSelectedRows([]); // Reset checkbox khi chuyển trang
     setSelectAll(false);
   };
 
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
+  // Xử lý trang trước
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      setSelectedRows([]);
+      setSelectAll(false);
+    }
+  };
+
+  // Xử lý trang sau
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      setSelectedRows([]);
+      setSelectAll(false);
+    }
+  };
+
+  // Tạo danh sách các trang hiển thị
+  const getPageNumbers = () => {
+    const maxPagesToShow = 3; // Số trang tối đa hiển thị ở mỗi đầu/cuối
+    const pages = [];
+
+    // Nếu tổng số trang <= 7, hiển thị tất cả
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+      return pages;
+    }
+
+    // Hiển thị 3 trang đầu
+    if (currentPage <= 4) {
+      for (let i = 1; i <= maxPagesToShow; i++) {
+        pages.push(i);
+      }
+      pages.push('...');
+      for (let i = totalPages - 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    }
+    // Hiển thị 3 trang cuối
+    else if (currentPage >= totalPages - 3) {
+      for (let i = 1; i <= 2; i++) {
+        pages.push(i);
+      }
+      pages.push('...');
+      for (let i = totalPages - 2; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    }
+    // Hiển thị trang ở giữa
+    else {
+      for (let i = 1; i <= 2; i++) {
+        pages.push(i);
+      }
+      pages.push('...');
+      pages.push(currentPage - 1);
+      pages.push(currentPage);
+      pages.push(currentPage + 1);
+      pages.push('...');
+      for (let i = totalPages - 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
+
+  // Mở modal và lấy dữ liệu chi tiết
+  const handleEditClick = async (id) => {
+    try {
+      const response = await axios.get(`https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(id)}`);
+      setEditData(response.data);
+      setFormData({
+        customerName: response.data.customerName,
+        company: response.data.company,
+        orderValue: response.data.orderValue,
+        orderDate: response.data.orderDate,
+        status: response.data.status,
+      });
+      setModalError(null);
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        setModalError(`Customer with ID ${id} not found. Please check the ID and try again.`);
+      } else {
+        setModalError('Failed to fetch customer data. Please try again.');
+      }
+      console.error('Failed to fetch customer data:', err);
+    }
+    setIsModalOpen(true);
+  };
+
+  // Xử lý thay đổi giá trị trong form
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Xử lý submit form (cập nhật dữ liệu)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!editData) {
+      setModalError('No customer data to update.');
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `https://67f2bf95ec56ec1a36d4144f.mockapi.io/customers/${String(editData.id)}`,
+        formData
+      );
+      setData((prevData) =>
+        prevData.map((item) => (item.id === editData.id ? response.data : item))
+      );
+      setIsModalOpen(false);
+    } catch (err) {
+      setModalError('Failed to update customer data. Please try again.');
+      console.error('Failed to update customer data:', err);
+    }
+  };
+
+  // Đóng modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditData(null);
+    setFormData({
+      customerName: '',
+      company: '',
+      orderValue: '',
+      orderDate: '',
+      status: '',
+    });
+    setModalError(null);
+  };
+
+  // Xử lý trạng thái loading và lỗi
+  if (loading) {
+    return <div className="text-center text-gray-600">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
   }
 
   return (
@@ -142,7 +296,7 @@ const DataTable = () => {
                   </span>
                 </td>
                 <td className="p-4">
-                  <button>
+                  <button onClick={() => handleEditClick(row.id)}>
                     <FaEdit className="w-4 h-4 text-gray-500 hover:text-gray-700" />
                   </button>
                 </td>
@@ -156,21 +310,141 @@ const DataTable = () => {
       <div className="flex justify-between items-center mt-6">
         <p className="text-sm text-gray-600">{data.length} results</p>
         <div className="flex space-x-2">
-          {pageNumbers.map((page) => (
+          {/* Nút Previous */}
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded-full text-sm ${
+              currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <FaChevronLeft />
+          </button>
+
+          {/* Số trang */}
+          {getPageNumbers().map((page, index) => (
             <button
-              key={page}
-              onClick={() => handlePageChange(page)}
+              key={index}
+              onClick={() => typeof page === 'number' && handlePageChange(page)}
               className={`px-3 py-1 rounded-full text-sm ${
-                currentPage === page
+                page === currentPage
                   ? "bg-pink-500 text-white"
-                  : "border border-gray-300 text-gray-600 hover:bg-gray-100"
+                  : typeof page === 'number'
+                  ? "border border-gray-300 text-gray-600 hover:bg-gray-100"
+                  : "text-gray-600 cursor-default"
               }`}
+              disabled={typeof page !== 'number'}
             >
               {page}
             </button>
           ))}
+
+          {/* Nút Next */}
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 rounded-full text-sm ${
+              currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <FaChevronRight />
+          </button>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-opacity-30 backdrop-blur flex items-center justify-center border-2">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-bold mb-4">Edit Customer</h3>
+            {modalError && (
+              <div className="mb-4 p-2 bg-red-100 text-red-600 rounded-lg">
+                {modalError}
+              </div>
+            )}
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Customer Name</label>
+                <input
+                  type="text"
+                  name="customerName"
+                  value={formData.customerName}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Company</label>
+                <input
+                  type="text"
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Order Value</label>
+                <input
+                  type="number"
+                  name="orderValue"
+                  value={formData.orderValue}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Order Date</label>
+                <input
+                  type="text"
+                  name="orderDate"
+                  value={formData.orderDate}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  placeholder="DD/MM/YYYY"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  required
+                >
+                  <option value="New">New</option>
+                  <option value="In-progress">In-progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
